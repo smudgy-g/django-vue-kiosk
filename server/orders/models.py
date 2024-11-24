@@ -1,8 +1,8 @@
 import uuid
 from django.db import models
 
-from company.models import Company
-from product.models import Product
+from companies.models import Company
+from products.models import Product
 
 
 class Order(models.Model):

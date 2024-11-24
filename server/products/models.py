@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 
-from supplier.models import Supplier
+from suppliers.models import Supplier
 
 
 class Product(models.Model):
