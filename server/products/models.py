@@ -9,7 +9,7 @@ class Product(models.Model):
   supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
   created_at = models.DateTimeField(auto_now_add=True)
   name = models.CharField(max_length=100)
-  price = models.DecimalField(max_digits=10000, decimal_places=2)
+  price = models.DecimalField(max_digits=1000, decimal_places=2)
   description = models.CharField(max_length=500, null=True, blank=True)
   product_code = models.CharField(max_length=100, null=True, blank=True)
 
