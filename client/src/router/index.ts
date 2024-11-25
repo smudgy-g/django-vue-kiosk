@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/public/HomeView.vue'
+import PortalLayout from '@/layouts/PortalLayout.vue'
+import ProductList from '@/views/portal/ProductList.vue'
+import DashboardView from '@/views/portal/DashboardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,8 +30,32 @@ const router = createRouter({
     },
     {
       path: '/portal',
-      name: 'portal',
-      component: () => import('@/views/portal/PortalLayout.vue'),
+      // name: 'portal',
+      component: PortalLayout,
+      children: [
+        {
+          path: 'dashboard',
+          name: 'dashboard',
+          component: DashboardView,
+        },
+        {
+          path: 'products',
+          name: 'products',
+          component: ProductList,
+        },
+        // {
+        //   path: 'suppliers',
+        //   component: ProductList,
+        // },
+        // {
+        //   path: 'orders',
+        //   component: ProductList,
+        // },
+        // {
+        //   path: 'reports',
+        //   component: ProductList,
+        // },
+      ],
     },
   ],
 })

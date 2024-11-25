@@ -46,10 +46,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'djoser',
-    'companies',
-    'orders',
-    'products',
-    'suppliers',
+    'company',
+    'order',
+    'product',
+    'supplier',
 ]
 
 CORS_ALLOWED_ORIGINS = [

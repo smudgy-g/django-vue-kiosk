@@ -36,7 +36,7 @@
                     </div>
                   </div>
                   <div class="relative flex-1 px-4 mt-6 sm:px-6">
-                    <!-- Your content -->
+                    <slot />
                   </div>
                 </div>
               </DialogPanel>
