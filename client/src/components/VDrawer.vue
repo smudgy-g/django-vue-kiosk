@@ -1,6 +1,6 @@
 <template>
-  <TransitionRoot as="template" :show="open">
-    <Dialog class="relative z-10" @close="open = false">
+  <TransitionRoot as="template" :show="openDrawer">
+    <Dialog class="relative z-10" @close="$emit('close')">
       <div class="fixed inset-0" />
 
       <div class="fixed inset-0 overflow-hidden">
@@ -16,17 +16,17 @@
               leave-to="translate-x-full"
             >
               <DialogPanel class="w-screen max-w-md pointer-events-auto">
-                <div class="flex flex-col h-full py-6 overflow-y-scroll bg-white shadow-xl">
-                  <div class="px-4 sm:px-6">
-                    <div class="flex items-start justify-between">
-                      <DialogTitle class="text-base font-semibold text-gray-900"
-                        >Panel title</DialogTitle
-                      >
+                <div class="flex flex-col h-full overflow-y-scroll bg-white shadow-xl">
+                  <div class="px-4 py-6 bg-blue-700 sm:px-6">
+                    <div class="flex items-center justify-between">
+                      <DialogTitle class="text-base font-semibold text-white">
+                        {{ title }}
+                      </DialogTitle>
                       <div class="flex items-center ml-3 h-7">
                         <button
                           type="button"
-                          class="relative text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                          @click="open = false"
+                          class="relative text-blue-200 bg-blue-700 rounded-md hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                          @click="$emit('close')"
                         >
                           <span class="absolute -inset-2.5" />
                           <span class="sr-only">Close panel</span>
@@ -34,8 +34,14 @@
                         </button>
                       </div>
                     </div>
+                    <div class="mt-1">
+                      <p class="text-sm text-blue-300">
+                        <slot name="sub-heading" />
+                      </p>
+                    </div>
                   </div>
-                  <div class="relative flex-1 px-4 mt-6 sm:px-6">
+                  <div class="relative flex-1 px-4 py-6 sm:px-6">
+                    <!-- Your content -->
                     <slot />
                   </div>
                 </div>
@@ -48,10 +54,17 @@
   </TransitionRoot>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 
-const open = ref(true)
+const props = defineProps<{
+  openDrawer: boolean
+  title: string
+}>()
+
+defineEmits<{
+  (e: 'close'): void
+}>()
 </script>

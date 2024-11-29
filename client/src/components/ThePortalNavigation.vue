@@ -13,10 +13,12 @@
                 :key="item.name"
                 :href="item.href"
                 :class="[
-                  item.current ? 'bg-blue-700 text-white' : 'text-white hover:bg-blue-500/75',
+                  item.href === activeRoute
+                    ? 'bg-blue-700 text-white'
+                    : 'text-white hover:bg-blue-500/75',
                   'rounded-md px-3 py-2 text-sm font-medium',
                 ]"
-                :aria-current="item.current ? 'page' : undefined"
+                :aria-current="item.href === activeRoute ? 'page' : undefined"
                 >{{ item.name }}</a
               >
             </div>
@@ -48,7 +50,7 @@
                     <a
                       :href="item.href"
                       :class="[
-                        active ? 'bg-gray-100 outline-none' : '',
+                        item.href === activeRoute ? 'bg-gray-100 outline-none' : '',
                         'block px-4 py-2 text-sm text-gray-700',
                       ]"
                       >{{ item.name }}</a
@@ -81,10 +83,12 @@
           as="a"
           :href="item.href"
           :class="[
-            item.current ? 'bg-blue-700 text-white' : 'text-white hover:bg-blue-500/75',
+            item.href === activeRoute
+              ? 'bg-blue-700 text-white'
+              : 'text-white hover:bg-blue-500/75',
             'block rounded-md px-3 py-2 text-base font-medium',
           ]"
-          :aria-current="item.current ? 'page' : undefined"
+          :aria-current="item.href === activeRoute ? 'page' : undefined"
           >{{ item.name }}</DisclosureButton
         >
       </div>
@@ -111,7 +115,7 @@
   </Disclosure>
 </template>
 <script setup lang="ts">
-import { watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   Disclosure,
@@ -124,19 +128,17 @@ import {
 } from '@headlessui/vue'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 
-const route = useRoute()
-
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-}
+// const user = {
+//   name: 'Tom Cook',
+//   email: 'tom@example.com',
+// }
 
 const navigation = [
-  { name: 'Dashboard', href: '/portal/dashboard', current: true },
-  { name: 'Products', href: '/portal/products', current: false },
-  { name: 'Suppliers', href: '/portal/suppliers', current: false },
-  { name: 'Orders', href: '/portal/orders', current: false },
-  { name: 'Reports', href: '/portal/reports', current: false },
+  { name: 'Dashboard', href: '/portal/dashboard' },
+  { name: 'Products', href: '/portal/products' },
+  { name: 'Suppliers', href: '/portal/suppliers' },
+  { name: 'Orders', href: '/portal/orders' },
+  { name: 'Reports', href: '/portal/reports' },
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -144,20 +146,7 @@ const userNavigation = [
   { name: 'Sign out', href: '#' },
 ]
 
-watch(
-  () => route.name,
-  (newName, oldName) => {
-    console.log(newName)
-    navigation.forEach((item) => {
-      if (item.name.toLowerCase() === newName) {
-        item.current = true
-      } else {
-        item.current = false
-      }
-    })
-  },
-  {
-    deep: true,
-  },
-)
+const activeRoute = computed(() => {
+  return decodeURI(useRoute().path)
+})
 </script>
