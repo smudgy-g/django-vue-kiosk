@@ -7,6 +7,13 @@
       <div class="flex flex-col justify-between flex-1">
         <div class="divide-y divide-gray-200 sm:px-6">
           <div class="pt-6 pb-5 space-y-6">
+            <VSelect
+              id="supplier"
+              label="Supplier"
+              :value="form.supplier"
+              :disabled="mode === 'view'"
+              :options="supplierList"
+            />
             <VInput
               id="product-name"
               label="Product name"
@@ -55,14 +62,18 @@
 </template>
 
 <script setup lang="ts">
-import type { Product } from '@/types'
+import type { Option, Product } from '@/types'
+import VSelect from './VSelect.vue'
 import VInput from './VInput.vue'
 import VTextarea from './VTextarea.vue'
-import { reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
+
+// MARK: Props & emits
 
 const props = defineProps<{
   mode: 'view' | 'edit'
   productDetails?: Product
+  supplierList: Option<string>[]
 }>()
 
 const emit = defineEmits<{
@@ -71,11 +82,17 @@ const emit = defineEmits<{
 }>()
 
 const form = reactive({
+  supplier: {
+    value: props.productDetails?.supplier.id || '',
+    label: props.productDetails?.supplier.name || '',
+  },
   productName: props.productDetails?.name || '',
   productCode: props.productDetails?.product_code || '',
   price: props.productDetails?.price || 0,
   description: props.productDetails?.description || '',
 })
+
+// MARK: Helpers
 
 function handleSubmit() {
   const updatedProduct = {
@@ -87,17 +104,4 @@ function handleSubmit() {
 
   emit('submit', updatedProduct)
 }
-
-watch(
-  () => props.productDetails,
-  (newDetails) => {
-    if (newDetails) {
-      form.productName = newDetails.name || ''
-      form.productCode = newDetails.product_code || ''
-      form.price = newDetails.price || 0
-      form.description = newDetails.description || ''
-    }
-  },
-  { immediate: true },
-)
 </script>

@@ -31,8 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import VInput from './VInput.vue'
-import VTextarea from './VTextarea.vue'
+import VInput from '@/components/VInput.vue'
+import VTextarea from '@/components/VTextarea.vue'
 
 defineEmits<{
   (e: 'close'): void

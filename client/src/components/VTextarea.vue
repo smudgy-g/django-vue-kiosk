@@ -16,6 +16,6 @@
 defineProps<{
   id: string
   label: string
-  value: string | number
+  value?: string | number
 }>()
 </script>

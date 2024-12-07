@@ -1,13 +1,8 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold text-gray-900">Products</h1>
-        <!-- <p class="mt-2 text-sm text-gray-700">
-                A list of all the products in your account including their name, product_code, email and Description.
-              </p> -->
-      </div>
-      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+    <DashboardHeader>
+      Products
+      <template #button>
         <button
           type="button"
           class="block px-3 py-2 text-sm font-semibold text-center text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
@@ -15,8 +10,9 @@
         >
           Add product
         </button>
-      </div>
-    </div>
+      </template>
+    </DashboardHeader>
+
     <div class="mt-8 -mx-4 sm:-mx-0">
       <TheLoadingSpinner v-if="isFetching" class="mt-16" />
       <template v-else>
@@ -50,24 +46,29 @@
             <VTableCell>
               {{ product.price }}
             </VTableCell>
-            <VTableCell class="text-right sm:pr-0">
+            <VTableCell class="flex gap-2 text-right sm:pr-0">
               <button
                 class="text-blue-600 hover:text-blue-900"
-                @click="() => handleEditProduct(product.id)"
+                @click="handleEditProduct(product.id)"
               >
                 Edit
                 <span class="sr-only">, {{ product.name }}</span>
               </button>
+              <!-- <button class="text-blue-600 hover:text-blue-900" @click="handleViewProduct">
+                View
+                <span class="sr-only">, {{ product.name }}</span>
+              </button> -->
             </VTableCell>
           </tr>
         </VTable>
       </template>
     </div>
-    <VDrawer title="Add Product" :open-drawer="isDrawerOpen" @close="isDrawerOpen = false">
+    <VDrawer title="Manage Product" :open-drawer="isDrawerOpen" @close="isDrawerOpen = false">
       <ProductForm
         :mode="productDrawerMode"
         @close="isDrawerOpen = false"
         :product-details="selectedProduct"
+        :supplier-list="supplierList"
       />
     </VDrawer>
   </div>
@@ -82,12 +83,13 @@ import VTableCell from '@/components/VTableCell.vue'
 import VDrawer from '@/components/VDrawer.vue'
 import TheLoadingSpinner from '@/components/TheLoadingSpinner.vue'
 import ProductForm from '@/components/ProductForm.vue'
-import type { Product } from '@/types'
+import type { Option, Product, Supplier } from '@/types'
+import DashboardHeader from '@/components/DashboardHeader.vue'
 
 const isDrawerOpen = ref(false)
-const isLoading = ref(false)
 const productDrawerMode = ref<'edit' | 'view'>('view')
 const selectedProduct = ref<Product>()
+const supplierList = ref<Option<string>[]>([])
 
 const {
   data: products,
@@ -100,31 +102,36 @@ if (error.value) {
   throw error.value
 }
 
-function fetchProduct(id: string) {
-  const { data, error } = useFetch(
-    import.meta.env.VITE_SERVER_BASE_URL + '/api/v1/products/' + id,
+async function fetchSupplierList(): Promise<Option<string>[]> {
+  const { data, error } = await useFetch<Supplier[]>(
+    import.meta.env.VITE_SERVER_BASE_URL + '/api/v1/suppliers/',
   ).json()
 
-  if (error.value) {
-    console.error(error)
-    throw error.value
-  }
-  selectedProduct.value = data as unknown as Product
+  if (error.value) console.error(error.value)
+  console.log(data.value)
+  if (!data.value) return []
+
+  return (data.value as Supplier[]).map((supplier) => ({
+    value: supplier.id,
+    label: supplier.name,
+  }))
 }
 
-function handleEditProduct(id: string) {
-  fetchProduct(id)
+async function handleEditProduct(id: string) {
   productDrawerMode.value = 'edit'
+  selectedProduct.value = (products.value as Product[]).find((p) => p.id === id)
+  supplierList.value = [
+    {
+      value: selectedProduct.value?.supplier.id as string,
+      label: selectedProduct.value?.supplier.name as string,
+    },
+  ]
+  // supplierList.value = (await fetchSupplierList()) ?? []
   isDrawerOpen.value = true
 }
 
 function handleAddProduct() {
   productDrawerMode.value = 'edit'
-  isDrawerOpen.value = true
-}
-
-function handleViewProduct() {
-  productDrawerMode.value = 'view'
   isDrawerOpen.value = true
 }
 </script>

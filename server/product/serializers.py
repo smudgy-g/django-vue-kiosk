@@ -1,7 +1,5 @@
 from rest_framework import serializers
-
-from ..supplier.serializers import SupplierSerializer
-
+from supplier.serializers import SupplierSerializer
 from .models import Product
 
 

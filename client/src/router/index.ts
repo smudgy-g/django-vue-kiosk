@@ -3,6 +3,7 @@ import HomeView from '@/views/public/HomeView.vue'
 import PortalLayout from '@/layouts/PortalLayout.vue'
 import ProductList from '@/views/portal/ProductList.vue'
 import DashboardView from '@/views/portal/DashboardView.vue'
+import SupplierList from '@/views/portal/SupplierList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,8 +41,13 @@ const router = createRouter({
         },
         {
           path: 'products',
-          name: 'products',
+          name: 'product_list',
           component: ProductList,
+        },
+        {
+          path: 'suppliers',
+          name: 'supplier_list',
+          component: SupplierList,
         },
         // {
         //   path: 'suppliers',
