@@ -24,7 +24,14 @@
                 v-model="form.lastName"
               />
               <VInput
-                class="sm:col-span-4"
+                class="sm:col-span-3"
+                id="username"
+                label="Username"
+                autocomplete="username"
+                v-model="form.username"
+              />
+              <VInput
+                class="sm:col-span-3"
                 id="email"
                 label="Email address"
                 type="email"
@@ -109,10 +116,12 @@ import VCard from '@/components/VCard.vue'
 import VInput from '@/components/VInput.vue'
 import VButton from '@/components/VButton.vue'
 import { Variant } from '@/enums'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 const schema = yup.object().shape({
   firstName: yup.string().required(),
   lastName: yup.string().required(),
+  username: yup.string().required(),
   email: yup.string().email().required(),
   password: yup.string().required(),
   confirmPassword: yup
@@ -130,6 +139,7 @@ const form = reactive<yup.InferType<typeof schema>>({
   firstName: '',
   lastName: '',
   email: '',
+  username: '',
   password: '',
   confirmPassword: '',
   company: '',
@@ -147,6 +157,7 @@ async function handleFormSubmit() {
   try {
     await schema.validate(form, { abortEarly: false }) // Validate all fields
     console.log('Form is valid:', form)
+    const { data } = await useCustomFetch('/api/v1/auth/users/').post(form).json()
   } catch (error) {
     if (error instanceof yup.ValidationError) {
       console.dir(error.inner) // Logs detailed error information for all fields

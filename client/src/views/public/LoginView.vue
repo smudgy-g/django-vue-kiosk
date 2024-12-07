@@ -23,36 +23,15 @@
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
       <div class="px-6 py-12 bg-white shadow sm:rounded-lg sm:px-12">
-        <form class="space-y-6" action="#" method="POST">
-          <div>
-            <label for="email" class="block font-medium text-gray-900 text-sm/6">
-              Email address
-            </label>
-            <div class="mt-2">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm/6"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label for="password" class="block font-medium text-gray-900 text-sm/6">Password</label>
-            <div class="mt-2">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autocomplete="current-password"
-                required
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm/6"
-              />
-            </div>
-          </div>
+        <form class="space-y-6" @submit.prevent="handleLogin">
+          <VInput id="username" label="Username" v-model="form.username" autocomplete="username" />
+          <VInput
+            id="password"
+            type="password"
+            label="Password"
+            v-model="form.password"
+            autocomplete="password"
+          />
 
           <div class="flex justify-end">
             <div class="text-sm/6">
@@ -83,3 +62,33 @@
     </div>
   </div>
 </template>
+<script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+import VInput from '@/components/VInput.vue'
+import { reactive } from 'vue'
+
+const route = useRoute()
+const router = useRouter()
+const { removeToken, setToken } = useAuthStore()
+
+const form = reactive({
+  username: '',
+  password: '',
+})
+
+async function handleLogin() {
+  removeToken()
+  const { data } = await useCustomFetch('/api/v1/auth/token/login/').post(form).json()
+
+  console.log(data.value)
+
+  const token = data.value?.auth_token
+  setToken(token)
+  localStorage.setItem('token', token)
+
+  const toPath = route.meta.to || '/portal/dashboard'
+  router.push(toPath)
+}
+</script>
